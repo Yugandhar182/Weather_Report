@@ -9,11 +9,34 @@
 
   const fetchWeatherData = async () => {
     try {
-      const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`);
-      weatherData = response.data;
+      const response = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`);
+      weatherData = response.data.list;
+      showFilteredData();
     } catch (error) {
       console.error('Error fetching weather data:', error);
     }
+  };
+
+  // Function to filter weather data for specific days
+  const filterWeatherForSpecificDays = (data, days) => {
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const filteredData = {};
+    days.forEach(day => {
+      filteredData[dayNames[day]] = data.filter(item => new Date(item.dt_txt).getDay() === day).map(item => {
+        return {
+          temperature: item.main.temp,
+          description: item.weather[0].description,
+          humidity: item.main.humidity,
+          windSpeed: item.wind.speed
+        };
+      })[0];
+    });
+    return filteredData;
+  };
+
+  const showFilteredData = () => {
+    const filteredData = filterWeatherForSpecificDays(weatherData, [3, 4, 5, 6, 0]);
+    weatherData = filteredData;
   };
 
   onMount(() => {
@@ -23,12 +46,16 @@
 </script>
 
 <style>
- 
-  
-
-  
   main.container {
     margin-top: 20px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th, td {
+    padding: 10px;
+    border: 1px solid #ccc;
   }
 </style>
 
@@ -37,14 +64,29 @@
     <div class="col-md-6 offset-md-3">
       <input type="text" class="form-control mb-2" bind:value={city} placeholder="Enter city name" />
       <button class="btn btn-primary btn-block" on:click={fetchWeatherData}>Get Weather</button>
-
+      
       {#if weatherData}
-        <div class="mt-4">
-          <h2>Weather for {weatherData.name}</h2>
-          <p>Temperature: {weatherData.main.temp}°C</p>
-          <p>Description: {weatherData.weather[0].description}</p>
-          <!-- Add more weather data as needed -->
-        </div>
+     
+        <table>
+          <thead>
+            <tr>
+              <th style="color: blue;">Property</th>
+              {#each Object.keys(weatherData) as day}
+                <th style="color: blue;">{day}</th>
+              {/each}
+            </tr>
+          </thead>
+          <tbody>
+            {#each Object.keys(weatherData[Object.keys(weatherData)[0]]) as prop}
+              <tr>
+                <td >{prop}</td>
+                {#each Object.values(weatherData) as dayData}
+                  <td>{dayData[prop] ? dayData[prop] : '-'}</td>
+                {/each}
+              </tr>
+            {/each}
+          </tbody>
+        </table>
       {:else}
         <p>No weather data available</p>
       {/if}
