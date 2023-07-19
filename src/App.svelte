@@ -51,13 +51,17 @@
   });
 </script>
 
+
 <style>
   main.container {
+    
+    background-image: url('https://images.pexels.com/photos/2132180/pexels-photo-2132180.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'); 
     margin-top: 20px;
-   
-    height: 500px;
-    width: 1000px;
+ 
+    height: 700px;
+    width: 1100px;
   }
+
   .weather-table {
     width: 100%;
     border-collapse: collapse;
@@ -66,7 +70,16 @@
   .weather-table th,
   .weather-table td {
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #ef1313;
+  }
+  .weather-table th {
+    font-size: 18px; 
+    color: green; /* You can adjust the color as well */
+  }
+
+  .weather-table td {
+    font-size: 25px; 
+    color: rgb(11, 174, 8); 
   }
 </style>
 
@@ -82,7 +95,7 @@
           <table class="weather-table">
             <thead>
               <tr>
-                <th style="color: blue;">Property</th>
+                <th style="color: green;">Property</th>
                 {#each Object.keys(weatherData) as day}
                   <th style="color: blue;">{day}</th>
                 {/each}
@@ -91,9 +104,9 @@
             <tbody>
               {#each Object.keys(weatherData[Object.keys(weatherData)[0]]) as prop}
                 <tr>
-                  <td >{prop}</td>
+                  <td style="color: blue;"  >{prop}</td>
                   {#each Object.values(weatherData) as dayData}
-                    <td>{dayData[prop] ? dayData[prop] : '-'}</td>
+                    <td style="color: crimson;">{dayData[prop] ? dayData[prop] : '-'}</td>
                   {/each}
                 </tr>
               {/each}
