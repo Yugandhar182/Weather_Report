@@ -1,6 +1,5 @@
 <script>
   import { onMount } from 'svelte';
-  import axios from 'axios';
   import 'bootstrap/dist/css/bootstrap.min.css';
 
   const apiKey = '16a3974f03c4fcccc82c44efdd5a6a3f';
@@ -9,8 +8,12 @@
 
   const fetchWeatherData = async () => {
     try {
-      const response = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`);
-      weatherData = response.data.list;
+      const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      weatherData = data.list;
       showFilteredData();
     } catch (error) {
       console.error('Error fetching weather data:', error);
@@ -66,7 +69,6 @@
       <button class="btn btn-primary btn-block" on:click={fetchWeatherData}>Get Weather</button>
       
       {#if weatherData}
-     
         <table>
           <thead>
             <tr>
