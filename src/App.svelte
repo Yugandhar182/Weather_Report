@@ -54,7 +54,7 @@
 <style>
   main.container {
     margin-top: 20px;
-    background-color: rgb(206, 215, 240);
+   
     height: 500px;
     width: 1000px;
   }
