@@ -4,6 +4,7 @@
 
   const apiKey = '16a3974f03c4fcccc82c44efdd5a6a3f';
   let city = '';
+  let locationInfo = '';
   let weatherData = null;
 
   const fetchWeatherData = async () => {
@@ -14,6 +15,8 @@
       }
       const data = await response.json();
       weatherData = data.list;
+      const { name, state, country } = data.city;
+      locationInfo = state ? `Weather in ${name}, ${state}, ${country}` : `Weather in ${name}, ${country}`;
       showFilteredData();
     } catch (error) {
       console.error('Error fetching weather data:', error);
@@ -51,12 +54,17 @@
 <style>
   main.container {
     margin-top: 20px;
+    background-color: rgb(206, 215, 240);
+    height: 500px;
+    width: 1000px;
   }
-  table {
+  .weather-table {
     width: 100%;
     border-collapse: collapse;
+    margin-top: 20px;
   }
-  th, td {
+  .weather-table th,
+  .weather-table td {
     padding: 10px;
     border: 1px solid #ccc;
   }
@@ -68,29 +76,34 @@
       <input type="text" class="form-control mb-2" bind:value={city} placeholder="Enter city name" />
       <button class="btn btn-primary btn-block" on:click={fetchWeatherData}>Get Weather</button>
       
-      {#if weatherData}
-        <table>
-          <thead>
-            <tr>
-              <th style="color: blue;">Property</th>
-              {#each Object.keys(weatherData) as day}
-                <th style="color: blue;">{day}</th>
-              {/each}
-            </tr>
-          </thead>
-          <tbody>
-            {#each Object.keys(weatherData[Object.keys(weatherData)[0]]) as prop}
+      {#if locationInfo}
+        <h2>{locationInfo}</h2>
+        {#if weatherData}
+          <table class="weather-table">
+            <thead>
               <tr>
-                <td >{prop}</td>
-                {#each Object.values(weatherData) as dayData}
-                  <td>{dayData[prop] ? dayData[prop] : '-'}</td>
+                <th style="color: blue;">Property</th>
+                {#each Object.keys(weatherData) as day}
+                  <th style="color: blue;">{day}</th>
                 {/each}
               </tr>
-            {/each}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {#each Object.keys(weatherData[Object.keys(weatherData)[0]]) as prop}
+                <tr>
+                  <td >{prop}</td>
+                  {#each Object.values(weatherData) as dayData}
+                    <td>{dayData[prop] ? dayData[prop] : '-'}</td>
+                  {/each}
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        {:else}
+          <p>No weather data available</p>
+        {/if}
       {:else}
-        <p>No weather data available</p>
+        <p>Enter a city name to get weather data.</p>
       {/if}
     </div>
   </div>
