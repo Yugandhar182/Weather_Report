@@ -133,7 +133,7 @@
               <p>Temperature: {data.temperature}°C</p>
               <p>Humidity: {data.humidity}%</p>
               <p>Wind Speed: {data.windSpeed} m/s</p>
-              <p> decription:{data.description}</p>
+              <p>description:{data.description}</p>
             </div>
           {/each}
         </div>
