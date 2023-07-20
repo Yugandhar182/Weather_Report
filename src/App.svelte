@@ -12,6 +12,7 @@
   let errorMessage = '';
   let currentTemperature = null;
   let cityName = null;
+  let savedCities = [];
 
   const displayModal = (message) => {
     errorMessage = message;
@@ -80,6 +81,18 @@
   onMount(() => {
     closeModal(); 
   });
+  const saveCity = () => {
+    if (city && !savedCities.includes(city)) {
+      if (savedCities.length < 5) {
+        savedCities = [...savedCities, city];
+        console.log(`City "${city}" saved!`);
+      } else {
+        console.log("You can only save up to five cities.");
+      }
+    } else {
+      console.log("City already saved or invalid city name.");
+    }
+  };
 </script>
 
 
@@ -88,6 +101,19 @@
     <h3 style="color:green;">Current Temperature in {cityName}: {currentTemperature}°C</h3>
   </div>
 {/if}
+<div class="save-button" on:click={saveCity}>
+  Save City
+</div>
+<div class="saved-cities">
+  {#if savedCities.length > 0}
+    <h3>Saved Cities:</h3>
+    <ul>
+      {#each savedCities as city}
+        <li>{city}</li>
+      {/each}
+    </ul>
+  {/if}
+</div>
 
 <main class="container mt-4">
   <div class="row">
@@ -95,49 +121,31 @@
       <input type="text" class="form-control mb-2" bind:value={city} placeholder="Enter city name" />
       <button class="btn btn-primary btn-block" on:click={fetchWeatherData}>Get Weather</button>
       
-      {#if locationInfo}
-        <h2>{locationInfo}</h2>
-        {#if weatherData}
-          <table class="weather-table">
-            <thead>
-              <tr>
-                <th style="color: purple;">Property</th>
-                {#each Object.keys(weatherData) as day}
-                  <th style="color: purple;">{day}</th>
-                {/each}
-              </tr>
-            </thead>
-            <tbody>
-              {#each Object.keys(weatherData[Object.keys(weatherData)[0]]) as prop}
-                <tr>
-                  <td style="color: blue;">{prop}</td>
-                  {#each Object.values(weatherData) as dayData}
-                    <td>
-                      {#if dayData[prop]}
-                        {#if prop === 'description'}
-                          <i class="weather-icon fa fa-{dayData[prop].toLowerCase()}"></i>
-                          <span>{dayData[prop]}</span>
-                        {:else}
-                          {dayData[prop]}
-                        {/if}
-                      {:else}
-                        -
-                      {/if}
-                    </td>
-                  {/each}
-                </tr>
-              {/each}
-            </tbody>
-          </table>
-        {:else}
-          <p>No weather data available</p>
-        {/if}
-      {:else}
-        <p>Enter a city name to get weather data.</p>
-      {/if}
-    </div>
-  </div>
 
+      {#if locationInfo}
+      <h2 style="color: chartreuse;">{locationInfo}</h2>
+      {#if weatherData}
+        <div class="weather-cards">
+          {#each Object.entries(weatherData) as [day, data]}
+            <div class="weather-card">
+              <h3>{day}</h3>
+              
+              <p>Temperature: {data.temperature}°C</p>
+              <p>Humidity: {data.humidity}%</p>
+              <p>Wind Speed: {data.windSpeed} m/s</p>
+              <p> decription:{data.description}</p>
+            </div>
+          {/each}
+        </div>
+      {:else}
+        <p>No weather data available</p>
+      {/if}
+    {:else}
+      <p>Enter a city name to get weather data.</p>
+    {/if}
+  </div>
+</div>
+  
   <div class="modal" tabindex="-1" role="dialog" style="{modalStyle}">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -157,44 +165,79 @@
     </div>
   </div>
 </main>
-
-
 <style>
   main.container { 
     background-image: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?fit=crop&w=1300&q=80'); 
-    margin-bottom: -30px;
+    margin-bottom: -10px;
     height: 700px;
-    width: 1300px;
+    width: 1100px;
   }
 
-  .weather-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-
-  .weather-table th,
-  .weather-table td {
-    padding: 10px;
-    border: 1px solid #ef1313;
-  }
-
-  .weather-table th {
-    font-size: 18px; 
-    color: green; 
-  }
-
-  .weather-table td {
-    font-size: 25px; 
-    color: rgb(11, 174, 8); 
-  }
-
-  .weather-icon {
-    font-size: 25px;
-  }
+  
   .current-weather{
     margin-top: 40px;
     font-size: 25px;
     margin-left: 80px;
   }
+  .save-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .saved-cities {
+    margin-top: 20px;
+    margin-left: 1200px;
+  }
+
+  .saved-cities ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .saved-cities li {
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
+  .weather-cards {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+
+}
+
+.weather-card {
+  border: 1px solid #ef1313;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 20px;
+  width: calc(20% - 20px); 
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 32%;
+  height: 270px;
+  background-color: rgb(240, 221, 232);
+}
+
+.weather-card h3 {
+  font-size: 20px;
+  color: purple;
+  margin-bottom: 10px;
+}
+
+.weather-card p {
+  font-size: 16px;
+  color: blue;
+}
+
+
+
 </style>
