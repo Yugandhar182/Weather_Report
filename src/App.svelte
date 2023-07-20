@@ -22,6 +22,8 @@
     savedCities = [...savedCities, cityName];
     localStorage.setItem('savedCities', JSON.stringify(savedCities));
     showSaveSuccessAlert();
+  }else {
+    alert('This city is already saved.');
   }
 };
 const showSaveSuccessAlert = () => {
@@ -179,7 +181,7 @@ const removeCity = (cityToRemove) => {
       <div class="modal-header">
         <h5 class="modal-title">Error</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close" on:click={closeModal}>
-          <span aria-hidden="true">&times;</span>
+        
         </button>
       </div>
       <div class="modal-body">
@@ -198,7 +200,7 @@ const removeCity = (cityToRemove) => {
       <div class="modal-header">
         <h5 class="modal-title">Saved Cities</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close" on:click={closeSavedCitiesModal}>
-          <span aria-hidden="true">&times;</span>
+          
         </button>
       </div>
       <div class="modal-body">
