@@ -6,8 +6,18 @@
   let city = '';
   let locationInfo = '';
   let weatherData = null;
-  let hasError = false;
+  let modalStyle = '';
   let errorMessage = '';
+
+  const displayModal = (message) => {
+    errorMessage = message;
+    modalStyle = 'display: block;';
+  };
+
+  const closeModal = () => {
+    modalStyle = '';
+    errorMessage = '';
+  };
 
   const fetchWeatherData = async () => {
     try {
@@ -20,12 +30,10 @@
       const { name, state, country } = data.city;
       locationInfo = state ? `Weather in ${name}, ${state}, ${country}` : `Weather in ${name}, ${country}`;
       showFilteredData();
-      hasError = false;
-      errorMessage = '';
+      closeModal(); // Hide the modal if the fetch is successful
     } catch (error) {
       console.error('Error fetching weather data:', error);
-      hasError = true;
-      errorMessage = 'Please enter a valid city name.';
+      displayModal('Please enter a valid city name and could  please check the spelling.');
     }
   };
 
@@ -52,58 +60,28 @@
   };
 
   onMount(() => {
-    // Fetch weather data on component mount (you can remove this if not needed).
-    fetchWeatherData();
+    
+    closeModal(); 
   });
 </script>
 
 
-<style>
-  main.container { 
-    background-image: url('https://images.pexels.com/photos/2132180/pexels-photo-2132180.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'); 
-    margin-top: 20px;
-    height: 700px;
-    width: 1100px;
-  }
-
-  .weather-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  .weather-table th,
-  .weather-table td {
-    padding: 10px;
-    border: 1px solid #ef1313;
-  }
-  .weather-table th {
-    font-size: 18px; 
-    color: green; /* You can adjust the color as well */
-  }
-
-  .weather-table td {
-    font-size: 25px; 
-    color: rgb(11, 174, 8); 
-  }
-</style>
 
 <main class="container mt-4">
   <div class="row">
     <div class="col-md-6 offset-md-3">
       <input type="text" class="form-control mb-2" bind:value={city} placeholder="Enter city name" />
-      <button class="btn btn-primary btn-block" on:click={fetchWeatherData}>Get Weather</button>
+      <button class="btn btn-success" on:click={fetchWeatherData}>Get Weather</button>
       
-      {#if hasError}
-        <p style="color: red;">{errorMessage}</p>
-      {:else if locationInfo}
+      {#if locationInfo}
         <h2>{locationInfo}</h2>
         {#if weatherData}
           <table class="weather-table">
             <thead>
               <tr>
-                <th style="color: green;">Property</th>
+                <th style="color: purple;">Property</th>
                 {#each Object.keys(weatherData) as day}
-                  <th style="color: blue;">{day}</th>
+                  <th style="color: purple;">{day}</th>
                 {/each}
               </tr>
             </thead>
@@ -126,4 +104,54 @@
       {/if}
     </div>
   </div>
+
+  
+  <div class="modal" tabindex="-1" role="dialog" style="{modalStyle}">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Error</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" on:click={closeModal}>
+           
+          </button>
+        </div>
+        <div class="modal-body">
+          {errorMessage}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" on:click={closeModal}>Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </main>
+
+
+<style>
+  main.container { 
+    background-image: url('https://images.unsplash.com/photo-1587279535322-b20697908487?fit=crop&w=1170&q=80'); 
+    margin-top: 20px;
+    height: 700px;
+    width: 1100px;
+  }
+
+  .weather-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  .weather-table th,
+  .weather-table td {
+    padding: 10px;
+    border: 1px solid #ef1313;
+  }
+  .weather-table th {
+    font-size: 18px; 
+    color: green; 
+  }
+
+  .weather-table td {
+    font-size: 25px; 
+    color: rgb(11, 174, 8); 
+  }
+</style>
