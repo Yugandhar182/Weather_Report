@@ -1,3 +1,5 @@
+
+
 <script>
   import { onMount } from 'svelte';
   import 'bootstrap/dist/css/bootstrap.min.css';
@@ -41,79 +43,51 @@
     }
   };
 
-  // Function to filter weather data for specific days
-  const filterWeatherForSpecificDays = (data, days) => {
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  // Function to filter weather data for the next five days
+  const filterWeatherForNextFiveDays = (data) => {
     const filteredData = {};
-    days.forEach(day => {
-      filteredData[dayNames[day]] = data.filter(item => new Date(item.dt_txt).getDay() === day).map(item => {
-        return {
-          temperature: item.main.temp,
-          description: item.weather[0].description,
-          humidity: item.main.humidity,
-          windSpeed: item.wind.speed
-        };
-      })[0];
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0); 
+
+    data.forEach((item) => {
+      const itemDate = new Date(item.dt_txt);
+      itemDate.setHours(0, 0, 0, 0);
+
+      const timeDiff = itemDate.getTime() - currentDate.getTime();
+      const daysDiff = timeDiff / (1000 * 3600 * 24);
+
+      if (daysDiff >= 0 && daysDiff <= 4) {
+        const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][itemDate.getDay()];
+        if (!filteredData[dayName]) {
+          filteredData[dayName] = {
+            temperature: item.main.temp,
+            description: item.weather[0].description,
+            humidity: item.main.humidity,
+            windSpeed: item.wind.speed,
+          };
+        }
+      }
     });
+
     return filteredData;
   };
 
   const showFilteredData = () => {
-    const filteredData = filterWeatherForSpecificDays(weatherData, [4, 5, 6, 0, 1]);
+    const filteredData = filterWeatherForNextFiveDays(weatherData);
     weatherData = filteredData;
   };
 
   onMount(() => {
-    closeModal(); // Hide the modal when the component is mounted
+    closeModal(); 
   });
 </script>
 
-<style>
-  main.container { 
-
-    background-image: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?fit=crop&w=1300&q=80'); 
-    margin-bottom: -30px;
-    height: 700px;
-    width: 1300px;
-  }
-
-  .weather-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-
-  .weather-table th,
-  .weather-table td {
-    padding: 10px;
-    border: 1px solid #ef1313;
-  }
-
-  .weather-table th {
-    font-size: 18px; 
-    color: green; 
-  }
-
-  .weather-table td {
-    font-size: 25px; 
-    color: rgb(11, 174, 8); 
-  }
-
-  .weather-icon {
-    font-size: 25px;
-  }
-  .current-weather{
-    margin-top: 40px;
-    font-size: 25px;
-    margin-left: 80px;
-  }
-</style>
 
 {#if currentTemperature && cityName}
-    <div class="current-weather">
-      <h3 style="color:green;">Current Temperature in {cityName}: {currentTemperature}°C</h3>
-    </div>
-  {/if}
+  <div class="current-weather">
+    <h3 style="color:green;">Current Temperature in {cityName}: {currentTemperature}°C</h3>
+  </div>
+{/if}
 
 <main class="container mt-4">
   <div class="row">
@@ -164,8 +138,6 @@
     </div>
   </div>
 
-  
-
   <div class="modal" tabindex="-1" role="dialog" style="{modalStyle}">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -185,3 +157,44 @@
     </div>
   </div>
 </main>
+
+
+<style>
+  main.container { 
+    background-image: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?fit=crop&w=1300&q=80'); 
+    margin-bottom: -30px;
+    height: 700px;
+    width: 1300px;
+  }
+
+  .weather-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  .weather-table th,
+  .weather-table td {
+    padding: 10px;
+    border: 1px solid #ef1313;
+  }
+
+  .weather-table th {
+    font-size: 18px; 
+    color: green; 
+  }
+
+  .weather-table td {
+    font-size: 25px; 
+    color: rgb(11, 174, 8); 
+  }
+
+  .weather-icon {
+    font-size: 25px;
+  }
+  .current-weather{
+    margin-top: 40px;
+    font-size: 25px;
+    margin-left: 80px;
+  }
+</style>
