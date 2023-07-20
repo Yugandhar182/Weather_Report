@@ -1,4 +1,3 @@
-<!-- App.svelte -->
 <script>
   import { onMount } from 'svelte';
   import 'bootstrap/dist/css/bootstrap.min.css';
@@ -9,6 +8,8 @@
   let weatherData = null;
   let modalStyle = '';
   let errorMessage = '';
+  let currentTemperature = null;
+  let cityName = null;
 
   const displayModal = (message) => {
     errorMessage = message;
@@ -30,6 +31,8 @@
       weatherData = data.list;
       const { name, state, country } = data.city;
       locationInfo = state ? `Weather in ${name}, ${state}, ${country}` : `Weather in ${name}, ${country}`;
+      currentTemperature = data.list[0].main.temp; // Set current temperature
+      cityName = name; // Set city name
       showFilteredData();
       closeModal(); // Hide the modal if the fetch is successful
     } catch (error) {
@@ -61,15 +64,15 @@
   };
 
   onMount(() => {
-   
     closeModal(); // Hide the modal when the component is mounted
   });
 </script>
 
 <style>
   main.container { 
+
     background-image: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?fit=crop&w=1300&q=80'); 
-    margin-top: 20px;
+    margin-bottom: -30px;
     height: 600px;
     width: 1300px;
   }
@@ -88,7 +91,7 @@
 
   .weather-table th {
     font-size: 18px; 
-    color: green; /* You can adjust the color as well */
+    color: green; 
   }
 
   .weather-table td {
@@ -99,7 +102,17 @@
   .weather-icon {
     font-size: 25px;
   }
+  .current-weather{
+    margin-top: 40px;
+    font-size: 25px;
+  }
 </style>
+
+{#if currentTemperature && cityName}
+    <div class="current-weather">
+      <h3 style="color:green;">Current Temperature in {cityName}: {currentTemperature}°C</h3>
+    </div>
+  {/if}
 
 <main class="container mt-4">
   <div class="row">
@@ -151,6 +164,7 @@
   </div>
 
   
+
   <div class="modal" tabindex="-1" role="dialog" style="{modalStyle}">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
