@@ -85,6 +85,7 @@
     if (city && !savedCities.includes(city)) {
       if (savedCities.length < 5) {
         savedCities = [...savedCities, city];
+        localStorage.setItem('savedCities', JSON.stringify(savedCities)); // Save to localStorage
         console.log(`City "${city}" saved!`);
       } else {
         console.log("You can only save up to five cities.");
@@ -93,6 +94,19 @@
       console.log("City already saved or invalid city name.");
     }
   };
+
+  // Function to load savedCities from localStorage (if any) when the app starts
+  const loadSavedCitiesFromLocalStorage = () => {
+    const savedCitiesJSON = localStorage.getItem('savedCities');
+    if (savedCitiesJSON) {
+      savedCities = JSON.parse(savedCitiesJSON);
+    }
+  };
+
+  onMount(() => {
+    closeModal();
+    loadSavedCitiesFromLocalStorage(); // Load savedCities from localStorage
+  });
 </script>
 
 
@@ -101,9 +115,7 @@
     <h3 style="color:green;">Current Temperature in {cityName}: {currentTemperature}°C</h3>
   </div>
 {/if}
-<div class="save-button" on:click={saveCity}>
-  Save City
-</div>
+
 <div class="saved-cities">
   {#if savedCities.length > 0}
     <h3>Saved Cities:</h3>
@@ -120,8 +132,7 @@
     <div class="col-md-6 offset-md-3">
       <input type="text" class="form-control mb-2" bind:value={city} placeholder="Enter city name" />
       <button class="btn btn-primary btn-block" on:click={fetchWeatherData}>Get Weather</button>
-      
-
+      <button class="save-button" on:click={saveCity}>Save City </button>
       {#if locationInfo}
       <h2 style="color: chartreuse;">{locationInfo}</h2>
       {#if weatherData}
@@ -129,7 +140,6 @@
           {#each Object.entries(weatherData) as [day, data]}
             <div class="weather-card">
               <h3>{day}</h3>
-              
               <p>Temperature: {data.temperature}°C</p>
               <p>Humidity: {data.humidity}%</p>
               <p>Wind Speed: {data.windSpeed} m/s</p>
