@@ -17,12 +17,22 @@
   let savedCitiesModalContent = '';
 
 
-const saveCity = () => {
+  const saveCity = () => {
   if (cityName && !savedCities.includes(cityName)) {
     savedCities = [...savedCities, cityName];
-    showSaveSuccessAlert(); 
+    localStorage.setItem('savedCities', JSON.stringify(savedCities));
+    showSaveSuccessAlert();
   }
 };
+const showSaveSuccessAlert = () => {
+  alert('City saved successfully!');
+};
+onMount(() => {
+  const savedCitiesFromLocalStorage = localStorage.getItem('savedCities');
+  if (savedCitiesFromLocalStorage) {
+    savedCities = JSON.parse(savedCitiesFromLocalStorage);
+  }
+});
 
 
 const showSavedCities = () => {
@@ -45,9 +55,7 @@ const removeCity = (cityToRemove) => {
   };
 
 
-const showSaveSuccessAlert = () => {
-  alert('City saved successfully!');
-};
+
   const displayModal = (message) => {
     errorMessage = message;
     modalStyle = 'display: block;';
@@ -134,7 +142,7 @@ const showSaveSuccessAlert = () => {
     <div class="col-md-6 offset-md-3">
       <input type="text" class="form-control mb-2" bind:value={city} placeholder="Enter city name" />
       <button class="btn btn-primary btn-block" on:click={fetchWeatherData}>Get Weather</button>
-      
+      <span class="spacer"></span>
  
       <button class="btn btn-success btn-block mt-2" on:click={saveCity}>Save City</button>
 
@@ -195,15 +203,16 @@ const showSaveSuccessAlert = () => {
       </div>
       <div class="modal-body">
         {#if savedCities.length > 0}
-          {#each savedCities as city}
-            <div>
-              <span>{city}</span>
-              <button class="btn btn-sm btn-danger" on:click={() => removeCity(city)}>Remove</button>
-            </div>
-          {/each}
-        {:else}
-          <p>No saved cities.</p>
-        {/if}
+        {#each savedCities as city}
+          <div>
+            <span>{city}</span>
+            <button class="btn btn-sm btn-danger" on:click={() => removeCity(city)}>Remove</button>
+          </div>
+        {/each}
+      {:else}
+        <p>No saved cities.</p>
+      {/if}
+      
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal" on:click={closeSavedCitiesModal}>Close</button>
@@ -273,5 +282,8 @@ button {
     justify-content: space-between;
     align-items: center;
   }
+  .spacer {
+  margin: 0 30px;
+}
 
 </style>
