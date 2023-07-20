@@ -1,3 +1,4 @@
+<!-- App.svelte -->
 <script>
   import { onMount } from 'svelte';
   import 'bootstrap/dist/css/bootstrap.min.css';
@@ -55,23 +56,56 @@
   };
 
   const showFilteredData = () => {
-    const filteredData = filterWeatherForSpecificDays(weatherData, [ 4, 5, 6, 0 , 1]);
+    const filteredData = filterWeatherForSpecificDays(weatherData, [4, 5, 6, 0, 1]);
     weatherData = filteredData;
   };
 
   onMount(() => {
-    
-    closeModal(); 
+   
+    closeModal(); // Hide the modal when the component is mounted
   });
 </script>
 
+<style>
+  main.container { 
+    background-image: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?fit=crop&w=1300&q=80'); 
+    margin-top: 20px;
+    height: 600px;
+    width: 1300px;
+  }
 
+  .weather-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  .weather-table th,
+  .weather-table td {
+    padding: 10px;
+    border: 1px solid #ef1313;
+  }
+
+  .weather-table th {
+    font-size: 18px; 
+    color: green; /* You can adjust the color as well */
+  }
+
+  .weather-table td {
+    font-size: 25px; 
+    color: rgb(11, 174, 8); 
+  }
+
+  .weather-icon {
+    font-size: 25px;
+  }
+</style>
 
 <main class="container mt-4">
   <div class="row">
     <div class="col-md-6 offset-md-3">
       <input type="text" class="form-control mb-2" bind:value={city} placeholder="Enter city name" />
-      <button class="btn btn-success" on:click={fetchWeatherData}>Get Weather</button>
+      <button class="btn btn-primary btn-block" on:click={fetchWeatherData}>Get Weather</button>
       
       {#if locationInfo}
         <h2>{locationInfo}</h2>
@@ -88,9 +122,20 @@
             <tbody>
               {#each Object.keys(weatherData[Object.keys(weatherData)[0]]) as prop}
                 <tr>
-                  <td style="color: blue;"  >{prop}</td>
+                  <td style="color: blue;">{prop}</td>
                   {#each Object.values(weatherData) as dayData}
-                    <td style="color: crimson;">{dayData[prop] ? dayData[prop] : '-'}</td>
+                    <td>
+                      {#if dayData[prop]}
+                        {#if prop === 'description'}
+                          <i class="weather-icon fa fa-{dayData[prop].toLowerCase()}"></i>
+                          <span>{dayData[prop]}</span>
+                        {:else}
+                          {dayData[prop]}
+                        {/if}
+                      {:else}
+                        -
+                      {/if}
+                    </td>
                   {/each}
                 </tr>
               {/each}
@@ -112,7 +157,7 @@
         <div class="modal-header">
           <h5 class="modal-title">Error</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close" on:click={closeModal}>
-           
+            <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
@@ -125,33 +170,3 @@
     </div>
   </div>
 </main>
-
-
-<style>
-  main.container { 
-    background-image: url('https://images.unsplash.com/photo-1587279535322-b20697908487?fit=crop&w=1170&q=80'); 
-    margin-top: 20px;
-    height: 700px;
-    width: 1100px;
-  }
-
-  .weather-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  .weather-table th,
-  .weather-table td {
-    padding: 10px;
-    border: 1px solid #ef1313;
-  }
-  .weather-table th {
-    font-size: 18px; 
-    color: green; 
-  }
-
-  .weather-table td {
-    font-size: 25px; 
-    color: rgb(11, 174, 8); 
-  }
-</style>
