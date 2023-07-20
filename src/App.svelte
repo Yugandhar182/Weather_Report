@@ -133,7 +133,7 @@
               <p>Temperature: {data.temperature}°C</p>
               <p>Humidity: {data.humidity}%</p>
               <p>Wind Speed: {data.windSpeed} m/s</p>
-              <p>description:{data.description}</p>
+              <p> decription:{data.description}</p>
             </div>
           {/each}
         </div>
@@ -166,14 +166,44 @@
   </div>
 </main>
 <style>
-  main.container { 
-    background-image: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?fit=crop&w=1300&q=80'); 
+  main.container {
+    background-image: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?fit=crop&w=1300&q=80');
     margin-bottom: -10px;
+   margin-left: -20px;
     height: 700px;
+   
     width: 1100px;
+   
+    height: 700px;
+    overflow: auto;
+    position: relative; 
   }
 
-  
+  .weather-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  .weather-table th,
+  .weather-table td {
+    padding: 10px;
+    border: 1px solid #ef1313;
+  }
+
+  .weather-table th {
+    font-size: 18px; 
+    color: green; 
+  }
+
+  .weather-table td {
+    font-size: 25px; 
+    color: rgb(11, 174, 8); 
+  }
+
+  .weather-icon {
+    font-size: 25px;
+  }
   .current-weather{
     margin-top: 40px;
     font-size: 25px;
@@ -219,11 +249,11 @@
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 20px;
-  width: calc(20% - 20px); 
+  width: calc(10% - 10px);
   text-align: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 32%;
-  height: 270px;
+  height: 260px;
   background-color: rgb(240, 221, 232);
 }
 
@@ -238,6 +268,8 @@
   color: blue;
 }
 
-
+.weather-icon {
+  font-size: 25px;
+}
 
 </style>
