@@ -102,6 +102,11 @@
       savedCities = JSON.parse(savedCitiesJSON);
     }
   };
+  const removeCity = (cityToRemove) => {
+    savedCities = savedCities.filter((city) => city !== cityToRemove);
+    localStorage.setItem('savedCities', JSON.stringify(savedCities)); // Update localStorage after removal
+    console.log(`City "${cityToRemove}" removed!`);
+  };
 
   onMount(() => {
     closeModal();
@@ -121,7 +126,10 @@
     <h3>Saved Cities:</h3>
     <ul>
       {#each savedCities as city}
-        <li>{city}</li>
+        <li>
+          {city}
+          <button on:click={() => removeCity(city)}>Remove City</button>
+        </li>
       {/each}
     </ul>
   {/if}
@@ -132,7 +140,7 @@
     <div class="col-md-6 offset-md-3">
       <input type="text" class="form-control mb-2" bind:value={city} placeholder="Enter city name" />
       <button class="btn btn-primary btn-block" on:click={fetchWeatherData}>Get Weather</button>
-      <button class="save-button" on:click={saveCity}>Save City </button>
+      <button class="save-button" on:click={saveCity}>Save City</button>
       {#if locationInfo}
       <h2 style="color: chartreuse;">{locationInfo}</h2>
       {#if weatherData}
@@ -143,7 +151,7 @@
               <p>Temperature: {data.temperature}°C</p>
               <p>Humidity: {data.humidity}%</p>
               <p>Wind Speed: {data.windSpeed} m/s</p>
-              <p> decription:{data.description}</p>
+              <p>Description: {data.description}</p>
             </div>
           {/each}
         </div>
@@ -155,26 +163,26 @@
     {/if}
   </div>
 </div>
-  
-  <div class="modal" tabindex="-1" role="dialog" style="{modalStyle}">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Error</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close" on:click={closeModal}>
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          {errorMessage}
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal" on:click={closeModal}>Close</button>
-        </div>
+</main>
+
+<div class="modal" tabindex="-1" role="dialog" style="{modalStyle}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Error</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" on:click={closeModal}>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {errorMessage}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" on:click={closeModal}>Close</button>
       </div>
     </div>
   </div>
-</main>
+</div>
 <style>
   main.container {
     background-image: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?fit=crop&w=1300&q=80');
