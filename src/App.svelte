@@ -169,7 +169,7 @@
   main.container {
     background-image: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?fit=crop&w=1300&q=80');
     margin-bottom: -10px;
-   margin-left: -20px;
+   margin-left: 10px;
     height: 700px;
    
     width: 1100px;
