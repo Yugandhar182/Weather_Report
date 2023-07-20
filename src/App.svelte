@@ -6,6 +6,8 @@
   let city = '';
   let locationInfo = '';
   let weatherData = null;
+  let hasError = false;
+  let errorMessage = '';
 
   const fetchWeatherData = async () => {
     try {
@@ -18,8 +20,12 @@
       const { name, state, country } = data.city;
       locationInfo = state ? `Weather in ${name}, ${state}, ${country}` : `Weather in ${name}, ${country}`;
       showFilteredData();
+      hasError = false;
+      errorMessage = '';
     } catch (error) {
       console.error('Error fetching weather data:', error);
+      hasError = true;
+      errorMessage = 'Please enter a valid city name.';
     }
   };
 
@@ -53,11 +59,9 @@
 
 
 <style>
-  main.container {
-    
+  main.container { 
     background-image: url('https://images.pexels.com/photos/2132180/pexels-photo-2132180.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'); 
     margin-top: 20px;
- 
     height: 700px;
     width: 1100px;
   }
@@ -89,7 +93,9 @@
       <input type="text" class="form-control mb-2" bind:value={city} placeholder="Enter city name" />
       <button class="btn btn-primary btn-block" on:click={fetchWeatherData}>Get Weather</button>
       
-      {#if locationInfo}
+      {#if hasError}
+        <p style="color: red;">{errorMessage}</p>
+      {:else if locationInfo}
         <h2>{locationInfo}</h2>
         {#if weatherData}
           <table class="weather-table">
