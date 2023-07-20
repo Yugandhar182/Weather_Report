@@ -73,7 +73,7 @@
 
     background-image: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?fit=crop&w=1300&q=80'); 
     margin-bottom: -30px;
-    height: 600px;
+    height: 700px;
     width: 1300px;
   }
 
@@ -105,6 +105,7 @@
   .current-weather{
     margin-top: 40px;
     font-size: 25px;
+    margin-left: 80px;
   }
 </style>
 
