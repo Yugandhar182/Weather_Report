@@ -53,9 +53,9 @@ const displaySavedCitiesModal = (message) => {
   savedCitiesModalContent = message;
 };
 const removeCity = (cityToRemove) => {
-    savedCities = savedCities.filter(city => city !== cityToRemove);
-  };
-
+  savedCities = savedCities.filter(city => city !== cityToRemove);
+  localStorage.setItem('savedCities', JSON.stringify(savedCities));
+};
 
 
   const displayModal = (message) => {
