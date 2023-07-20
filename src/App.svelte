@@ -13,7 +13,41 @@
   let currentTemperature = null;
   let cityName = null;
   let savedCities = [];
+  let savedCitiesModalStyle = '';
+  let savedCitiesModalContent = '';
 
+
+const saveCity = () => {
+  if (cityName && !savedCities.includes(cityName)) {
+    savedCities = [...savedCities, cityName];
+    showSaveSuccessAlert(); 
+  }
+};
+
+
+const showSavedCities = () => {
+  const cityList = savedCities.join(', ');
+  displaySavedCitiesModal(`Saved Cities: ${cityList}`);
+};
+
+
+const closeSavedCitiesModal = () => {
+  savedCitiesModalStyle = '';
+};
+
+
+const displaySavedCitiesModal = (message) => {
+  savedCitiesModalStyle = 'display: block;';
+  savedCitiesModalContent = message;
+};
+const removeCity = (cityToRemove) => {
+    savedCities = savedCities.filter(city => city !== cityToRemove);
+  };
+
+
+const showSaveSuccessAlert = () => {
+  alert('City saved successfully!');
+};
   const displayModal = (message) => {
     errorMessage = message;
     modalStyle = 'display: block;';
@@ -34,17 +68,17 @@
       weatherData = data.list;
       const { name, state, country } = data.city;
       locationInfo = state ? `Weather in ${name}, ${state}, ${country}` : `Weather in ${name}, ${country}`;
-      currentTemperature = data.list[0].main.temp; // Set current temperature
-      cityName = name; // Set city name
+      currentTemperature = data.list[0].main.temp; 
+      cityName = name; 
       showFilteredData();
-      closeModal(); // Hide the modal if the fetch is successful
+      closeModal(); 
     } catch (error) {
       console.error('Error fetching weather data:', error);
       displayModal('Please enter a valid city name and could  please check the spelling.');
     }
   };
 
-  // Function to filter weather data for the next five days
+  
   const filterWeatherForNextFiveDays = (data) => {
     const filteredData = {};
     const currentDate = new Date();
@@ -81,36 +115,10 @@
   onMount(() => {
     closeModal(); 
   });
-  const saveCity = () => {
-    if (city && !savedCities.includes(city)) {
-      if (savedCities.length < 5) {
-        savedCities = [...savedCities, city];
-        localStorage.setItem('savedCities', JSON.stringify(savedCities)); // Save to localStorage
-        console.log(`City "${city}" saved!`);
-      } else {
-        console.log("You can only save up to five cities.");
-      }
-    } else {
-      console.log("City already saved or invalid city name.");
-    }
-  };
-
-  // Function to load savedCities from localStorage (if any) when the app starts
-  const loadSavedCitiesFromLocalStorage = () => {
-    const savedCitiesJSON = localStorage.getItem('savedCities');
-    if (savedCitiesJSON) {
-      savedCities = JSON.parse(savedCitiesJSON);
-    }
-  };
-  const removeCity = (cityToRemove) => {
-    savedCities = savedCities.filter((city) => city !== cityToRemove);
-    localStorage.setItem('savedCities', JSON.stringify(savedCities)); // Update localStorage after removal
-    console.log(`City "${cityToRemove}" removed!`);
-  };
 
   onMount(() => {
     closeModal();
-    loadSavedCitiesFromLocalStorage(); // Load savedCities from localStorage
+   
   });
 </script>
 
@@ -121,26 +129,18 @@
   </div>
 {/if}
 
-<div class="saved-cities">
-  {#if savedCities.length > 0}
-    <h3>Saved Cities:</h3>
-    <ul>
-      {#each savedCities as city}
-        <li>
-          {city}
-          <button on:click={() => removeCity(city)}>Remove City</button>
-        </li>
-      {/each}
-    </ul>
-  {/if}
-</div>
-
 <main class="container mt-4">
   <div class="row">
     <div class="col-md-6 offset-md-3">
       <input type="text" class="form-control mb-2" bind:value={city} placeholder="Enter city name" />
       <button class="btn btn-primary btn-block" on:click={fetchWeatherData}>Get Weather</button>
-      <button class="save-button" on:click={saveCity}>Save City</button>
+      
+ 
+      <button class="btn btn-success btn-block mt-2" on:click={saveCity}>Save City</button>
+
+      
+      <button class="btn btn-info btn-block mt-2" on:click={showSavedCities}>Show Saved Cities</button>
+      
       {#if locationInfo}
       <h2 style="color: chartreuse;">{locationInfo}</h2>
       {#if weatherData}
@@ -183,11 +183,40 @@
     </div>
   </div>
 </div>
+
+<div class="modal" tabindex="-1" role="dialog" style="{savedCitiesModalStyle}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Saved Cities</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" on:click={closeSavedCitiesModal}>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {#if savedCities.length > 0}
+          {#each savedCities as city}
+            <div>
+              <span>{city}</span>
+              <button class="btn btn-sm btn-danger" on:click={() => removeCity(city)}>Remove</button>
+            </div>
+          {/each}
+        {:else}
+          <p>No saved cities.</p>
+        {/if}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" on:click={closeSavedCitiesModal}>Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <style>
   main.container {
     background-image: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?fit=crop&w=1300&q=80');
     margin-bottom: -10px;
-   margin-left: 10px;
+   margin-left: -10px;
     height: 700px;
    
     width: 1100px;
@@ -197,63 +226,14 @@
     position: relative; 
   }
 
-  .weather-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-
-  .weather-table th,
-  .weather-table td {
-    padding: 10px;
-    border: 1px solid #ef1313;
-  }
-
-  .weather-table th {
-    font-size: 18px; 
-    color: green; 
-  }
-
-  .weather-table td {
-    font-size: 25px; 
-    color: rgb(11, 174, 8); 
-  }
-
-  .weather-icon {
-    font-size: 25px;
-  }
-  .current-weather{
+ .current-weather{
     margin-top: 40px;
     font-size: 25px;
     margin-left: 80px;
   }
-  .save-button {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: #fff;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-  }
 
-  .saved-cities {
-    margin-top: 20px;
-    margin-left: 1200px;
-  }
 
-  .saved-cities ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
 
-  .saved-cities li {
-    font-size: 16px;
-    margin-bottom: 5px;
-  }
   .weather-cards {
   display: flex;
   justify-content: space-between;
@@ -285,9 +265,13 @@
   font-size: 16px;
   color: blue;
 }
-
-.weather-icon {
-  font-size: 25px;
-}
+button {
+    margin-top: 10px;
+  }
+  .modal-body div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
 </style>
