@@ -41,7 +41,7 @@
   };
 
   const showFilteredData = () => {
-    const filteredData = filterWeatherForSpecificDays(weatherData, [3, 4, 5, 6, 0]);
+    const filteredData = filterWeatherForSpecificDays(weatherData, [ 4, 5, 6, 0 , 1]);
     weatherData = filteredData;
   };
 
