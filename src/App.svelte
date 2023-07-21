@@ -336,7 +336,7 @@ const fetchWeatherForLastCity = async () => {
   text-align: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 32%;
-  height: 260px;
+  height: 240px;
   margin-top:20px;
  
 
