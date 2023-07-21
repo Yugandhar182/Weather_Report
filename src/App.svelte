@@ -15,25 +15,29 @@
    let currentWindSpeed = null;
   let savedCities = [];
  
-
   const saveCity = () => {
   if (savedCities.length < 5) {
     if (cityName && !savedCities.some((cityObj) => cityObj.city === cityName)) {
-      savedCities = [...savedCities, {
-        city: cityName,
-        temperature: currentTemperature,
-        humidity: currenthumidity,
-        windSpeed: currentWindSpeed,
-      }];
+      city = cityName; 
+      savedCities = [
+        ...savedCities,
+        {
+          city: cityName,
+          temperature: currentTemperature,
+          humidity: currenthumidity,
+          windSpeed: currentWindSpeed,
+        },
+      ];
       localStorage.setItem('savedCities', JSON.stringify(savedCities));
       showSaveSuccessAlert();
     } else {
-      alert('This city is already saved.');
+      alert('Please click on Get Weaather button after that click on Add city button.');
     }
   } else {
     alert('You can only add up to 5 cities.');
   }
 };
+
 
 
 const showSaveSuccessAlert = () => {
@@ -200,6 +204,8 @@ const fetchWeatherForLastCity = async () => {
       displayModal('Error fetching weather data for the selected city. Please try again later.');
     }
   };
+
+  
 </script>
 
 <div class="weather-heading">
