@@ -294,7 +294,7 @@ const fetchWeatherForLastCity = async () => {
   main.container {
     background-image: url('https://images.unsplash.com/photo-1580193769210-b8d1c049a7d9?w=1300&q=80');
     margin-bottom: -20px;
-   margin-left: 50px;
+   margin-left: 100px;
     height: 700px;
     width: 1300px;
     overflow: auto;
