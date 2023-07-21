@@ -24,30 +24,51 @@
   weatherData = null;
 };
 
-const saveCity = () => {
-    if (savedCities.length >= 5) {
-      alert('You can only add up to 5 cities.');
-    } else if (!cityName) {
-      displayModal('Please click on the "Get Weather" button and then click on the "Add City" button.');
-    } else if (savedCities.some((cityObj) => cityObj.city === cityName)) {
-      alert('The city is already saved.');
-    } else {
-      city = cityName;
+
+const saveCity = async () => {
+  if (savedCities.length >= 5) {
+    alert('You can only add up to 5 cities.');
+  } else if (!city) { 
+    displayModal('Please enter a valid city name.');
+  } else if (savedCities.some((cityObj) => cityObj.city === city)) { 
+    alert('The city is already saved.');
+  } else {
+    try {
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`
+      );
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+
+      // Extract the necessary weather information for the current city
+      const temperature = data.list[0].main.temp;
+      const humidity = data.list[0].main.humidity;
+      const windSpeed = data.list[0].wind.speed;
+
       savedCities = [
         ...savedCities,
         {
-          city: cityName,
-          temperature: currentTemperature,
-          humidity: currenthumidity,
-          windSpeed: currentWindSpeed,
+          city,
+          temperature,
+          humidity,
+          windSpeed,
         },
       ];
+
       localStorage.setItem('savedCities', JSON.stringify(savedCities));
-      cityName = null; // Reset the cityName variable after saving the city
       clearWeatherData(); // Clear weather details after saving the city
       city = ''; // Clear the input field after saving the city
+    } catch (error) {
+      console.error('Error fetching weather data:', error);
+      displayModal('Invalid city name.');
     }
-  };
+  }
+};
+
+
+
 const fetchWeatherForLastCity = async () => {
     const lastCity = localStorage.getItem('lastCity');
     if (lastCity) {
@@ -147,30 +168,7 @@ const fetchWeatherForLastCity = async () => {
   });
 
  
-  const fetchSavedCitiesWeather = async () => {
-  const promises = savedCities.map(async (cityObj) => {
-    try {
-      const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/forecast?q=${cityObj.city}&appid=${apiKey}&units=metric`
-      );
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      const currentTemperature = data.list[0].main.temp;
-      const humidity = data.list[0].main.humidity;
-      const windSpeed = data.list[0].wind.speed;
-      return { city: cityObj.city, temperature: currentTemperature, humidity, windSpeed };
-    } catch (error) {
-      console.error('Error fetching weather data:', error);
-      return { city: cityObj.city, temperature: 'N/A', humidity: 'N/A', windSpeed: 'N/A' };
-    }
-  });
-
-  const results = await Promise.all(promises);
-  savedCities = results;
-};
-
+ 
  
   onMount(async () => {
     const savedCitiesFromLocalStorage = localStorage.getItem('savedCities');
@@ -179,10 +177,9 @@ const fetchWeatherForLastCity = async () => {
     }
 
     await fetchWeatherForLastCity();
-    await fetchSavedCitiesWeather(); 
+  
   });
-
-const fetchWeatherDataForCity = async (city) => {
+  const fetchWeatherDataForCity = async (city) => {
   try {
     closeModal(); // Close the modal (if any) before fetching data for the new city
     city = city.trim(); // Trim the city name to remove any leading/trailing spaces
@@ -196,11 +193,12 @@ const fetchWeatherDataForCity = async (city) => {
       weatherData = data.list;
       const { name, state, country } = data.city;
       locationInfo = state ? `Weather in ${name}, ${state}, ${country}` : `Weather in ${name}, ${country}`;
-      currentTemperature = data.list[0].main.temp; 
-      currenthumidity = data.list[0].main.humidity; 
+      currentTemperature = data.list[0].main.temp;
+      currenthumidity = data.list[0].main.humidity;
+      currentWindSpeed = data.list[0].wind.speed; // New line to fetch wind speed
       cityName = name;
       city = name; // Update the value of the search input to the clicked city name
-      showFilteredData();
+      showFilteredData(); // Call showFilteredData after weatherData is set
     } else {
       displayModal('Please enter a valid city name.');
     }
