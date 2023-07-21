@@ -413,7 +413,7 @@ button {
    
   }
   .weather-heading{
-    margin-left: 150px;
+    margin-left: 300px;
   }
 
 </style>
