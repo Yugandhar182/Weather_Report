@@ -24,16 +24,7 @@
   weatherData = null;
 };
 
-  
-
-const fetchWeatherForLastCity = async () => {
-    const lastCity = localStorage.getItem('lastCity');
-    if (lastCity) {
-      city = lastCity;
-      await fetchWeatherData();
-    }
-  };
-  const saveCity = () => {
+const saveCity = () => {
     if (savedCities.length >= 5) {
       alert('You can only add up to 5 cities.');
     } else if (!cityName) {
@@ -53,8 +44,18 @@ const fetchWeatherForLastCity = async () => {
       ];
       localStorage.setItem('savedCities', JSON.stringify(savedCities));
       cityName = null; // Reset the cityName variable after saving the city
+      clearWeatherData(); // Clear weather details after saving the city
+      city = ''; // Clear the input field after saving the city
     }
   };
+const fetchWeatherForLastCity = async () => {
+    const lastCity = localStorage.getItem('lastCity');
+    if (lastCity) {
+      city = lastCity;
+      await fetchWeatherData();
+    }
+  };
+  
  
   onMount(async () => {
     const savedCitiesFromLocalStorage = localStorage.getItem('savedCities');
@@ -251,14 +252,7 @@ const fetchWeatherDataForCity = async (city) => {
       </div>
     </div>
     <div class="col-md-6">
-      <input
-  type="text"
-  class="form-control mb-2"
-  bind:value={city}
-  placeholder="Enter city name"
-  on:input={clearWeatherData}
-/>
-
+      <input type="text" class="form-control mb-2"  bind:value={city}  placeholder="Enter city name" on:input={clearWeatherData}/>
       <button class="btn btn-primary btn-block" on:click={fetchWeatherData}>Get Weather</button>
       <span class="spacer"></span>
       <button class="btn btn-success btn-block mt-2" on:click={saveCity}>Add City</button>
