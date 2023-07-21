@@ -315,7 +315,7 @@ const fetchWeatherForLastCity = async () => {
   }
 
  .current-weather{
-    margin-top: 40px;
+    margin-top: 10px;
     font-size: 25px;
     margin-left: 600px;
   }
