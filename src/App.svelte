@@ -14,31 +14,17 @@
    let currenthumidity =null;
    let currentWindSpeed = null;
   let savedCities = [];
- 
-  const saveCity = () => {
-  if (savedCities.length >= 5) {
-    alert('You can only add up to 5 cities.');
-  } else if (!cityName) {
-    alert('Please click on the "Get Weather" button and then click on the "Add City" button.');
-  } else if (savedCities.some((cityObj) => cityObj.city === cityName)) {
-    alert('The city is already saved.');
-  } else {
-    city = cityName; 
-    savedCities = [
-      ...savedCities,
-      {
-        city: cityName,
-        temperature: currentTemperature,
-        humidity: currenthumidity,
-        windSpeed: currentWindSpeed,
-      },
-    ];
-    localStorage.setItem('savedCities', JSON.stringify(savedCities));
-   
-  }
+
+  const clearWeatherData = () => {
+  locationInfo = '';
+  currentTemperature = null;
+  currenthumidity = null;
+  currentWindSpeed = null;
+  cityName = null;
+  weatherData = null;
 };
 
-
+  
 
 const fetchWeatherForLastCity = async () => {
     const lastCity = localStorage.getItem('lastCity');
@@ -47,7 +33,28 @@ const fetchWeatherForLastCity = async () => {
       await fetchWeatherData();
     }
   };
-
+  const saveCity = () => {
+    if (savedCities.length >= 5) {
+      alert('You can only add up to 5 cities.');
+    } else if (!cityName) {
+      displayModal('Please click on the "Get Weather" button and then click on the "Add City" button.');
+    } else if (savedCities.some((cityObj) => cityObj.city === cityName)) {
+      alert('The city is already saved.');
+    } else {
+      city = cityName;
+      savedCities = [
+        ...savedCities,
+        {
+          city: cityName,
+          temperature: currentTemperature,
+          humidity: currenthumidity,
+          windSpeed: currentWindSpeed,
+        },
+      ];
+      localStorage.setItem('savedCities', JSON.stringify(savedCities));
+      cityName = null; // Reset the cityName variable after saving the city
+    }
+  };
  
   onMount(async () => {
     const savedCitiesFromLocalStorage = localStorage.getItem('savedCities');
@@ -75,7 +82,6 @@ const fetchWeatherForLastCity = async () => {
     errorMessage = '';
   };
 
-
   const fetchWeatherData = async () => {
   try {
     const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`);
@@ -90,12 +96,12 @@ const fetchWeatherForLastCity = async () => {
     currenthumidity = data.list[0].main.humidity;
     currentWindSpeed = data.list[0].wind.speed; // New line to fetch wind speed
     cityName = name;
+    city = name;
     showFilteredData();
     closeModal();
-  } 
-  catch (error) {
+  } catch (error) {
     console.error('Error fetching weather data:', error);
-    displayModal('Please enter a valid city name and could  please check the spelling.');
+    displayModal('Invalid city name ,could you please check the spelling .');
   }
 };
 
@@ -175,33 +181,35 @@ const fetchWeatherForLastCity = async () => {
     await fetchSavedCitiesWeather(); 
   });
 
-  const fetchWeatherDataForCity = async (city) => {
-    try {
-      closeModal(); // Close the modal (if any) before fetching data for the new city
-      city = city.trim(); // Trim the city name to remove any leading/trailing spaces
-      if (city) {
-        // Fetch weather data for the clicked city
-        const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        weatherData = data.list;
-        const { name, state, country } = data.city;
-        locationInfo = state ? `Weather in ${name}, ${state}, ${country}` : `Weather in ${name}, ${country}`;
-        currentTemperature = data.list[0].main.temp; 
-        currenthumidity = data.list[0].main.hum; 
-        cityName = name; 
-        showFilteredData();
-      } else {
-        displayModal('Please enter a valid city name.');
+const fetchWeatherDataForCity = async (city) => {
+  try {
+    closeModal(); // Close the modal (if any) before fetching data for the new city
+    city = city.trim(); // Trim the city name to remove any leading/trailing spaces
+    if (city) {
+      // Fetch weather data for the clicked city
+      const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
       }
-    } catch (error) {
-      console.error('Error fetching weather data:', error);
-      displayModal('Error fetching weather data for the selected city. Please try again later.');
+      const data = await response.json();
+      weatherData = data.list;
+      const { name, state, country } = data.city;
+      locationInfo = state ? `Weather in ${name}, ${state}, ${country}` : `Weather in ${name}, ${country}`;
+      currentTemperature = data.list[0].main.temp; 
+      currenthumidity = data.list[0].main.humidity; 
+      cityName = name;
+      city = name; // Update the value of the search input to the clicked city name
+      showFilteredData();
+    } else {
+      displayModal('Please enter a valid city name.');
     }
-  };
-  
+  } catch (error) {
+    console.error('Error fetching weather data:', error);
+    displayModal('Error fetching weather data for the selected city. Please try again later.');
+  }
+};
+
+
 </script>
 
 <div class="weather-heading">
@@ -243,7 +251,14 @@ const fetchWeatherForLastCity = async () => {
       </div>
     </div>
     <div class="col-md-6">
-      <input type="text" class="form-control mb-2" bind:value={city} placeholder="Enter city name" />
+      <input
+  type="text"
+  class="form-control mb-2"
+  bind:value={city}
+  placeholder="Enter city name"
+  on:input={clearWeatherData}
+/>
+
       <button class="btn btn-primary btn-block" on:click={fetchWeatherData}>Get Weather</button>
       <span class="spacer"></span>
       <button class="btn btn-success btn-block mt-2" on:click={saveCity}>Add City</button>
