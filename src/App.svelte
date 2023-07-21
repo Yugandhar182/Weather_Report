@@ -16,28 +16,27 @@
   let savedCities = [];
  
   const saveCity = () => {
-  if (savedCities.length < 5) {
-    if (cityName && !savedCities.some((cityObj) => cityObj.city === cityName)) {
-      city = cityName; 
-      savedCities = [
-        ...savedCities,
-        {
-          city: cityName,
-          temperature: currentTemperature,
-          humidity: currenthumidity,
-          windSpeed: currentWindSpeed,
-        },
-      ];
-      localStorage.setItem('savedCities', JSON.stringify(savedCities));
-    
-    } else {
-      alert('please click on Get Weather button , after click on Add city button .');
-    }
-  } else {
+  if (savedCities.length >= 5) {
     alert('You can only add up to 5 cities.');
+  } else if (!cityName) {
+    alert('Please click on the "Get Weather" button and then click on the "Add City" button.');
+  } else if (savedCities.some((cityObj) => cityObj.city === cityName)) {
+    alert('The city is already saved.');
+  } else {
+    city = cityName; 
+    savedCities = [
+      ...savedCities,
+      {
+        city: cityName,
+        temperature: currentTemperature,
+        humidity: currenthumidity,
+        windSpeed: currentWindSpeed,
+      },
+    ];
+    localStorage.setItem('savedCities', JSON.stringify(savedCities));
+   
   }
 };
-
 
 
 
