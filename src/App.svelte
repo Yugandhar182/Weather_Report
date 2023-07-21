@@ -406,7 +406,7 @@ button {
   .close-box {
     position: absolute;
     top: 5px;
-    right: 6px;
+    right: 5px;
     width: 11px;
     height: 18px;
     border: 1px solid red;
