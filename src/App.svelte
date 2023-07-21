@@ -189,8 +189,9 @@ const fetchWeatherForLastCity = async () => {
     }
   };
 </script>
+<div class="weather-heading">
 <h1 style="color:Violet;">Weather Report</h1>
-
+</div>
 
 {#if currentTemperature && cityName}
   <div class="current-weather">
@@ -305,7 +306,7 @@ const fetchWeatherForLastCity = async () => {
  .current-weather{
     margin-top: 40px;
     font-size: 25px;
-    margin-left: 80px;
+    margin-left: 200px;
   }
 
 
@@ -409,6 +410,10 @@ button {
   .form-control{
     background-color: #c6daf0;
     margin-top: 5px;
+   
+  }
+  .weather-heading{
+    margin-left: 150px;
   }
 
 </style>
