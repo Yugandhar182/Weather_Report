@@ -11,13 +11,14 @@
   let errorMessage = '';
   let currentTemperature = null;
   let cityName = null;
+   let currenthumidity =null;
   let savedCities = [];
  
 
   const saveCity = () => {
     if (savedCities.length < 5) {
       if (cityName && !savedCities.some((cityObj) => cityObj.city === cityName)) {
-        savedCities = [...savedCities, { city: cityName, temperature: currentTemperature }];
+        savedCities = [...savedCities, { city: cityName, temperature: currentTemperature, humidity:currenthumidity }];
         localStorage.setItem('savedCities', JSON.stringify(savedCities));
         showSaveSuccessAlert();
       } else {
@@ -76,6 +77,8 @@ const fetchWeatherForLastCity = async () => {
       const { name, state, country } = data.city;
       locationInfo = state ? `Weather in ${name}, ${state}, ${country}` : `Weather in ${name}, ${country}`;
       currentTemperature = data.list[0].main.temp; 
+      currenthumidity = data.list[0].main.humidity;
+
       cityName = name; 
       showFilteredData();
       closeModal(); 
@@ -178,6 +181,7 @@ const fetchWeatherForLastCity = async () => {
         const { name, state, country } = data.city;
         locationInfo = state ? `Weather in ${name}, ${state}, ${country}` : `Weather in ${name}, ${country}`;
         currentTemperature = data.list[0].main.temp; 
+        currenthumidity = data.list[0].main.hum; 
         cityName = name; 
         showFilteredData();
       } else {
@@ -189,6 +193,7 @@ const fetchWeatherForLastCity = async () => {
     }
   };
 </script>
+
 <div class="weather-heading">
 <h1 style="color:Violet;">Weather Report</h1>
 </div>
