@@ -12,22 +12,29 @@
   let currentTemperature = null;
   let cityName = null;
    let currenthumidity =null;
+   let currentWindSpeed = null;
   let savedCities = [];
  
 
   const saveCity = () => {
-    if (savedCities.length < 5) {
-      if (cityName && !savedCities.some((cityObj) => cityObj.city === cityName)) {
-        savedCities = [...savedCities, { city: cityName, temperature: currentTemperature, humidity:currenthumidity }];
-        localStorage.setItem('savedCities', JSON.stringify(savedCities));
-        showSaveSuccessAlert();
-      } else {
-        alert('This city is already saved.');
-      }
+  if (savedCities.length < 5) {
+    if (cityName && !savedCities.some((cityObj) => cityObj.city === cityName)) {
+      savedCities = [...savedCities, {
+        city: cityName,
+        temperature: currentTemperature,
+        humidity: currenthumidity,
+        windSpeed: currentWindSpeed,
+      }];
+      localStorage.setItem('savedCities', JSON.stringify(savedCities));
+      showSaveSuccessAlert();
     } else {
-      alert('You can only add up to 5 cities.');
+      alert('This city is already saved.');
     }
-  };
+  } else {
+    alert('You can only add up to 5 cities.');
+  }
+};
+
 
 const showSaveSuccessAlert = () => {
   alert('City saved successfully!');
@@ -50,6 +57,7 @@ const fetchWeatherForLastCity = async () => {
     await fetchWeatherForLastCity();
   });
 
+
   const removeCity = (cityToRemove) => {
   savedCities = savedCities.filter((city) => city.city !== cityToRemove);
   localStorage.setItem('savedCities', JSON.stringify(savedCities));
@@ -66,27 +74,30 @@ const fetchWeatherForLastCity = async () => {
     errorMessage = '';
   };
 
-  const fetchWeatherData = async () => {
-    try {
-      const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      weatherData = data.list;
-      const { name, state, country } = data.city;
-      locationInfo = state ? `Weather in ${name}, ${state}, ${country}` : `Weather in ${name}, ${country}`;
-      currentTemperature = data.list[0].main.temp; 
-      currenthumidity = data.list[0].main.humidity;
 
-      cityName = name; 
-      showFilteredData();
-      closeModal(); 
-    } catch (error) {
-      console.error('Error fetching weather data:', error);
-      displayModal('Please enter a valid city name and could  please check the spelling.');
+  const fetchWeatherData = async () => {
+  try {
+    const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
-  };
+    const data = await response.json();
+    weatherData = data.list;
+    const { name, state, country } = data.city;
+    locationInfo = state ? `Weather in ${name}, ${state}, ${country}` : `Weather in ${name}, ${country}`;
+    currentTemperature = data.list[0].main.temp;
+    currenthumidity = data.list[0].main.humidity;
+    currentWindSpeed = data.list[0].wind.speed; // New line to fetch wind speed
+    cityName = name;
+    showFilteredData();
+    closeModal();
+  } 
+  catch (error) {
+    console.error('Error fetching weather data:', error);
+    displayModal('Please enter a valid city name and could  please check the spelling.');
+  }
+};
+
 
   
   const filterWeatherForNextFiveDays = (data) => {
@@ -117,6 +128,7 @@ const fetchWeatherForLastCity = async () => {
     return filteredData;
   };
 
+
   const showFilteredData = () => {
     const filteredData = filterWeatherForNextFiveDays(weatherData);
     weatherData = filteredData;
@@ -126,11 +138,7 @@ const fetchWeatherForLastCity = async () => {
     closeModal(); 
   });
 
-  onMount(() => {
-    closeModal();
-   
-  });
-
+ 
   const fetchSavedCitiesWeather = async () => {
   const promises = savedCities.map(async (cityObj) => {
     try {
@@ -214,23 +222,20 @@ const fetchWeatherForLastCity = async () => {
             {#each savedCities as cityObj}
               <li class="card">
                 <div class="saved-cities-card-body">
-                 
-                  <h5  style="color:blue;" class="city-name" on:click={() => fetchWeatherDataForCity(cityObj.city)}>{cityObj.city}</h5>
+                  <h5 style="color: blue;" class="city-name" on:click={() => fetchWeatherDataForCity(cityObj.city)}>{cityObj.city}</h5>
                   <div class="weather-info">
-                    <p>T: {cityObj.temperature}°C , H: {cityObj.humidity}% 
-                      <span class="close-box" on:click={() => removeCity(cityObj.city)}>
-                        <span class="close-symbol">&times;</span>
-                      </span>
+                    <p>T: {cityObj.temperature}°C , H: {cityObj.humidity}%, Wind: {cityObj.windSpeed} m/s</p>
+                    <span class="close-box" on:click={() => removeCity(cityObj.city)}>
+                      <span class="close-symbol">&times;</span>
+                    </span>
                   </div>
-                  
                 </div>
               </li>
             {/each}
           </ul>
+          
         {:else}
-       
-
-          <p style="color: white;">No Added cities.</p>
+        <p style="color: white;">No Added cities.</p>
     
         {/if}
       </div>
@@ -283,6 +288,7 @@ const fetchWeatherForLastCity = async () => {
     </div>
   </div>
 </div>
+
 
 <style>
   main.container {
