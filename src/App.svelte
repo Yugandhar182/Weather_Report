@@ -29,7 +29,7 @@
         },
       ];
       localStorage.setItem('savedCities', JSON.stringify(savedCities));
-      showSaveSuccessAlert();
+    
     } else {
       alert('please click on Get Weather button , after click on Add city button .');
     }
@@ -40,9 +40,7 @@
 
 
 
-const showSaveSuccessAlert = () => {
-  alert('City saved successfully!');
-};
+
 const fetchWeatherForLastCity = async () => {
     const lastCity = localStorage.getItem('lastCity');
     if (lastCity) {
