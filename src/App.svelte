@@ -31,7 +31,7 @@
       localStorage.setItem('savedCities', JSON.stringify(savedCities));
       showSaveSuccessAlert();
     } else {
-      alert('Please click on Get Weaather button after that click on Add city button.');
+      alert('please click on Get Weather button , after click on Add city button .');
     }
   } else {
     alert('You can only add up to 5 cities.');
@@ -204,7 +204,6 @@ const fetchWeatherForLastCity = async () => {
       displayModal('Error fetching weather data for the selected city. Please try again later.');
     }
   };
-
   
 </script>
 
@@ -294,6 +293,7 @@ const fetchWeatherForLastCity = async () => {
     </div>
   </div>
 </div>
+
 
 
 <style>
