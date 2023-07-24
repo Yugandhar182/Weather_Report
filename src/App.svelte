@@ -226,7 +226,7 @@ const fetchWeatherForLastCity = async () => {
 
       <div class="left-container">
         {#if savedCities.length > 0}
-          <h3 style="color: aliceblue;">Added Cities:</h3>
+          <h3 style="color: white;">Added Cities:</h3>
           <ul>
             {#each savedCities as cityObj}
               <li class="card">
@@ -261,10 +261,10 @@ const fetchWeatherForLastCity = async () => {
           {#each Object.entries(weatherData) as [day, data]}
             <div class="weather-card">
               <h3 style="color: crimson;">{day}</h3>
-              <p style="color: aliceblue;">Temperature: {data.temperature}°C</p>
-              <p style="color: aliceblue;">Humidity: {data.humidity}%</p>
-              <p style="color: aliceblue;">Wind Speed: {data.windSpeed} m/s</p>
-              <p style="color: aliceblue;" >Description: {data.description}</p>
+              <p style="color: blue;">Temperature: {data.temperature}°C</p>
+              <p style="color: blue;">Humidity: {data.humidity}%</p>
+              <p style="color: blue;">Wind Speed: {data.windSpeed} m/s</p>
+              <p style="color: blue;" >Description: {data.description}</p>
             </div>
           {/each}
         </div>
@@ -348,6 +348,8 @@ const fetchWeatherForLastCity = async () => {
   width: 32%;
   height: 240px;
   margin-top:20px;
+  background-color:white;
+ 
  
 
 }
@@ -359,7 +361,7 @@ const fetchWeatherForLastCity = async () => {
 
 .weather-card p {
   font-size: 16px;
-  color: blue;
+  color:white;
 }
 button {
     margin-top: 10px;
